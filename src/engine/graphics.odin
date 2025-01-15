@@ -24,11 +24,14 @@ running :: proc() -> bool {
     return !raylib.WindowShouldClose()
 }
 
-render :: proc() {
+render :: proc(character_pos: EntityPosition) {
     raylib.BeginDrawing()
     defer raylib.EndDrawing()
 
     raylib.ClearBackground(raylib.RAYWHITE)
+	draw_character(character_pos.x, character_pos.y)
+}
 
-	raylib.DrawRectangle(0,0, 100, 100, raylib.DARKBLUE)
+draw_character :: proc(x, y: i32) {
+	raylib.DrawRectangle(x, y, 20, 60, raylib.DARKBLUE)
 }
