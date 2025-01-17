@@ -7,10 +7,11 @@ main :: proc() {
     defer engine.shutdown()
 
 	character_pos := engine.EntityPosition{
-		x = 100,
-		y = 100
+		x = 500,
+		y = 500
 	}
     for engine.running() {
+		engine.check_input(&character_pos)
 
         engine.render(character_pos)
     }
