@@ -15,6 +15,9 @@ move_right :: proc(entity_pos: ^EntityPosition) {
 }
 
 jump :: proc(entity_pos: ^EntityPosition) {
+	if entity_pos.y < u16(pkg.settings.window.height - 100) {
+		return
+	}
 	entity_pos.vertical_velocity = -10
 	entity_pos.y -= 10
 }
@@ -29,5 +32,4 @@ apply_gravity  :: proc(entity_pos: ^EntityPosition) {
 		entity_pos.vertical_velocity += GRAVITY
 	}
 	entity_pos.y += u16(entity_pos.vertical_velocity)
-	fmt.println(entity_pos.vertical_velocity)
 }
