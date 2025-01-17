@@ -32,6 +32,6 @@ render :: proc(character_pos: EntityPosition) {
 	draw_character(character_pos.x, character_pos.y)
 }
 
-draw_character :: proc(x, y: i32) {
-	raylib.DrawRectangle(x, y, 20, 60, raylib.DARKBLUE)
+draw_character :: proc(x, y: u16) {
+	raylib.DrawRectangle(i32(x), i32(y), 20, 60, raylib.DARKBLUE)
 }

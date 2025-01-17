@@ -11,6 +11,7 @@ main :: proc() {
 		y = 500
 	}
     for engine.running() {
+		engine.apply_gravity(&character_pos)
 		engine.check_input(&character_pos)
 
         engine.render(character_pos)

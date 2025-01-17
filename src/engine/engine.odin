@@ -1,6 +1,7 @@
 package engine
 
 EntityPosition :: struct {
-	x: i32,
-	y: i32
+	x: u16,
+	y: u16,
+	vertical_velocity: f16,
 }
