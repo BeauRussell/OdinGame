@@ -1,7 +1,7 @@
-package engine
-
+package render
 import "vendor:raylib"
 import "../pkg"
+import "../engine"
 import "core:strings"
 import "core:c"
 
@@ -24,7 +24,7 @@ running :: proc() -> bool {
     return !raylib.WindowShouldClose()
 }
 
-render :: proc(character_pos: EntityPosition) {
+render :: proc(character_pos: engine.EntityPosition) {
     raylib.BeginDrawing()
     defer raylib.EndDrawing()
 

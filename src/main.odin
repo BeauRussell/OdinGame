@@ -1,19 +1,20 @@
 package main
 
 import "engine"
+import "render"
 
 main :: proc() {
-    engine.init()
-    defer engine.shutdown()
+    render.init()
+    defer render.shutdown()
 
 	character_pos := engine.EntityPosition{
 		x = 500,
 		y = 500
 	}
-    for engine.running() {
+    for render.running() {
 		engine.apply_gravity(&character_pos)
 		engine.check_input(&character_pos)
 
-        engine.render(character_pos)
+        render.render(character_pos)
     }
 }
