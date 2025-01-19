@@ -3,14 +3,15 @@ package render
 import "core:strings"
 import "core:fmt"
 
-STAGE_FOLDER_PATH :: "../stages/"
+STAGE_FOLDER_PATH :: ""
 
 load_stage :: proc(stage_num: int) {
-	builder: strings.Builder
-	_, err := strings.builder_init_len(&builder, 13)
-	strings.write_string(&builder, STAGE_FOLDER_PATH)
-	strings.write_int(&builder, stage_num)
+	sb := strings.builder_make()
+    defer strings.builder_destroy(&sb)
+	strings.write_string(&sb, "../stages/")
+	strings.write_int(&sb, stage_num)
+	strings.write_string(&sb, ".dat")
 
-	file_path := strings.to_string(builder)
+	file_path := strings.to_string(sb)
 	fmt.println(file_path)
 }
