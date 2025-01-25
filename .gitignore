@@ -1,2 +1,4 @@
 OdinGame
 *.bin
+/assets/
+/stages/

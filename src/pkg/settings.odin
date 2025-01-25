@@ -9,7 +9,7 @@ GameSettings :: struct {
     	width:  int,
     	height: int,
     	title:  string,
-	}
+	},
 }
 
 settings : GameSettings
@@ -20,7 +20,6 @@ init_settings :: proc() {
         panic("Failed to load game_settings.json")
     }
 	defer delete(settings_data)
-	fmt.println(string(settings_data))
 
 	err := json.unmarshal(settings_data, &settings)
 	if err != nil {

@@ -9,11 +9,13 @@ init :: proc() {
 	pkg.init_settings()
 
 	c_title := strings.clone_to_cstring(pkg.settings.window.title)
+	defer delete(c_title)
 	c_width := cast(c.int32_t)pkg.settings.window.width
 	c_height := cast(c.int32_t)pkg.settings.window.height
 
     raylib.InitWindow(c_width, c_height, c_title)
     raylib.SetTargetFPS(60)
+	delete(pkg.settings.window.title)
 }
 
 shutdown :: proc() {
