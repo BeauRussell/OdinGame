@@ -8,12 +8,13 @@ import "render"
 main :: proc() {
 	context.logger = create_logger()
 	defer log.destroy_console_logger(context.logger)
-	track: mem.Tracking_Allocator
-	mem.tracking_allocator_init(&track, context.allocator)
-	context.allocator = mem.tracking_allocator(&track)
-	defer log_leaks(&track) 
 
-	log.info("Starting up")
+	when ODIN_DEBUG {
+		track: mem.Tracking_Allocator
+		mem.tracking_allocator_init(&track, context.allocator)
+		context.allocator = mem.tracking_allocator(&track)
+		defer log_leaks(&track)
+	}
 
     render.init()
     defer render.shutdown()
