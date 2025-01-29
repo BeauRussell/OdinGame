@@ -1,35 +1,52 @@
 package engine
 
-import "core:fmt"
-import "../pkg"
+import "core:log"
 
-LATERAL_MOVEMENT_MULTIPLIER :: 0.0035
-GRAVITY :: 0.45
+import b2 "vendor:box2d"
+import rl "vendor:raylib"
 
-move_left :: proc(entity_pos: ^EntityPosition) {
-	entity_pos.x -= u16(f16(pkg.settings.window.width) * LATERAL_MOVEMENT_MULTIPLIER)
+world_id: b2.WorldId
+player_id: b2.BodyId
+
+init_world :: proc() -> b2.WorldId {
+	world_def := b2.DefaultWorldDef()
+	world_def.gravity = b2.Vec2{0, -200}
+	world_id = b2.CreateWorld(world_def)
+
+	return world_id
 }
 
-move_right :: proc(entity_pos: ^EntityPosition) {
-	entity_pos.x += u16(f16(pkg.settings.window.width) * LATERAL_MOVEMENT_MULTIPLIER)
+destroy_world :: proc(id: b2.WorldId = world_id) {
+	b2.DestroyWorld(id)
 }
 
-jump :: proc(entity_pos: ^EntityPosition) {
-	if entity_pos.y < u16(pkg.settings.window.height - 100) {
-		return
-	}
-	entity_pos.vertical_velocity = -10
-	entity_pos.y -= 10
+create_ground_body :: proc(ground: rl.Rectangle) -> b2.BodyId {
+	ground_body_def := b2.DefaultBodyDef()
+	ground_body_def.position = b2.Vec2{ground.x, -ground.y-ground.height}
+	ground_body_id := b2.CreateBody(world_id, ground_body_def)
+
+	ground_box := b2.MakeBox(ground.width, ground.height)
+	ground_shape_def := b2.DefaultShapeDef()
+	_ = b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
+
+	return ground_body_id
 }
 
-apply_gravity :: proc(entity_pos: ^EntityPosition) {
-	if entity_pos.y >= u16(pkg.settings.window.height - 100) {
-		entity_pos.vertical_velocity = 0
-		return
-	}
+create_player :: proc() -> b2.BodyId {
+	body_def := b2.DefaultBodyDef()
+	body_def.type = .dynamicBody
+	body_def.position = b2.Vec2{100, -1000}
+	body_def.fixedRotation = true
+	player_id = b2.CreateBody(world_id, body_def)
 
-	if entity_pos.vertical_velocity <= 10 {
-		entity_pos.vertical_velocity += GRAVITY
-	}
-	entity_pos.y += u16(entity_pos.vertical_velocity)
+	box := b2.MakeBox(20,60)
+	box_def := b2.DefaultShapeDef()
+	_ = b2.CreatePolygonShape(player_id, box_def, box)
+
+	return player_id
+}
+
+step_world :: proc(world_id: b2.WorldId = world_id, time_step: f32, sub_step: i32) -> Vec2 {
+	b2.World_Step(world_id, time_step, sub_step)
+	return b2.Body_GetPosition(player_id)
 }

@@ -2,8 +2,15 @@ package main
 
 import "core:log"
 import "core:mem"
+
+import rl "vendor:raylib"
+
 import "engine"
 import "render"
+
+FPS : i32 : 60
+TIME_STEP : f32 : 1.0 / f32(FPS)
+SUB_STEPS: i32 : 4
 
 main :: proc() {
 	context.logger = create_logger()
@@ -16,18 +23,25 @@ main :: proc() {
 		defer log_leaks(&track)
 	}
 
-    render.init()
+    render.init(FPS)
     defer render.shutdown()
 
-	character_pos := engine.EntityPosition{
-		x = 500,
-		y = 500,
-	}
-    for render.running() {
-		engine.apply_gravity(&character_pos)
-		engine.check_input(&character_pos)
+	world_id := engine.init_world()
+	defer engine.destroy_world(world_id)
 
-        render.render(character_pos)
+	ground := rl.Rectangle {
+		0,1080,
+		1920,1700,
+	}
+
+	ground_id := engine.create_ground_body(ground)
+	player_id := engine.create_player()
+
+    for render.running() {
+		render.render()
+		player_pos := engine.step_world(world_id, TIME_STEP, SUB_STEPS)
+
+		render.draw_player(player_pos)
     }
 }
 
