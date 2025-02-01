@@ -29,19 +29,21 @@ main :: proc() {
 	defer engine.destroy_world(world_id)
 
 	ground := rl.Rectangle {
-		0,1080,
-		1920,1700,
+		0,900,
+		1920,180,
 	}
 
 	ground_id := engine.create_ground_body(ground)
 	player_id := engine.create_player()
 
     for render.running() {
-
 		render.render()
+
+		rl.DrawRectangleRec(ground, rl.YELLOW)
 		player_pos := engine.step_world(world_id, 1.0 / f32(rl.GetFPS()), SUB_STEPS)
 
 		render.draw_player(player_pos)
+
 		
 		defer check_fps()
     }

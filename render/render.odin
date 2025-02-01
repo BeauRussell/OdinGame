@@ -36,5 +36,5 @@ render :: proc() {
 }
 
 draw_player :: proc(position: Vec2) {
-	raylib.DrawRectanglePro({position.x, -position.y, 40, 40}, {20, 20}, 0, raylib.DARKBLUE)
+	raylib.DrawRectanglePro({position.x, -position.y, 20, 60}, {0, 0}, 0, raylib.DARKBLUE)
 }
