@@ -8,8 +8,7 @@ import rl "vendor:raylib"
 import "engine"
 import "render"
 
-FPS : i32 : 60
-TIME_STEP : f32 : 1.0 / f32(FPS)
+TARGET_FPS : i32 : 60
 SUB_STEPS: i32 : 4
 
 main :: proc() {
@@ -23,7 +22,7 @@ main :: proc() {
 		defer log_leaks(&track)
 	}
 
-    render.init(FPS)
+    render.init(TARGET_FPS)
     defer render.shutdown()
 
 	world_id := engine.init_world()
@@ -38,10 +37,13 @@ main :: proc() {
 	player_id := engine.create_player()
 
     for render.running() {
+
 		render.render()
-		player_pos := engine.step_world(world_id, TIME_STEP, SUB_STEPS)
+		player_pos := engine.step_world(world_id, 1.0 / f32(rl.GetFPS()), SUB_STEPS)
 
 		render.draw_player(player_pos)
+		
+		defer check_fps()
     }
 }
 
@@ -62,4 +64,10 @@ log_leaks :: proc(track: ^mem.Tracking_Allocator) {
 
 create_logger :: proc() -> log.Logger {
 	return log.create_console_logger()
+}
+
+check_fps :: proc() {
+	if check_fps := rl.GetFPS(); check_fps < TARGET_FPS {
+		log.errorf("Failed to reach target FPS: %i -> %i", TARGET_FPS, check_fps)
+	}
 }
