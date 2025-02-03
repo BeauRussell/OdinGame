@@ -6,6 +6,7 @@ import "core:mem"
 import rl "vendor:raylib"
 
 import "engine"
+import "pkg"
 import "render"
 
 TARGET_FPS : i32 : 60
@@ -28,23 +29,23 @@ main :: proc() {
 	world_id := engine.init_world()
 	defer engine.destroy_world(world_id)
 
-	ground := rl.Rectangle {
-		0,900,
-		1920,180,
+	ground := engine.Box{
+		0, 32,
+		60, 2 
 	}
 
 	ground_id := engine.create_ground_body(ground)
 	player_id := engine.create_player()
 
     for render.running() {
-		render.render()
+		render.start_render()
 
-		rl.DrawRectangleRec(ground, rl.YELLOW)
-		player_pos := engine.step_world(world_id, 1.0 / f32(rl.GetFPS()), SUB_STEPS)
+		rl.DrawRectangleRec(cast(rl.Rectangle)ground, rl.YELLOW)
+		player_pos := engine.step_world(1.0 / f32(TARGET_FPS), SUB_STEPS)
 
 		render.draw_player(player_pos)
 
-		
+		render.end_render()
 		defer check_fps()
     }
 }

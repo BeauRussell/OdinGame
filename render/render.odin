@@ -1,5 +1,5 @@
 package render
-import "vendor:raylib"
+import rl "vendor:raylib"
 import "../pkg"
 import "../engine"
 import "core:strings"
@@ -15,26 +15,31 @@ init :: proc(fps: i32) {
 	c_width := cast(c.int32_t)pkg.settings.window.width
 	c_height := cast(c.int32_t)pkg.settings.window.height
 
-    raylib.InitWindow(c_width, c_height, c_title)
-    raylib.SetTargetFPS(fps)
+    rl.InitWindow(c_width, c_height, c_title)
+    rl.SetTargetFPS(fps)
 	delete(pkg.settings.window.title)
 }
 
 shutdown :: proc() {
-    raylib.CloseWindow()
+    rl.CloseWindow()
 }
 
 running :: proc() -> bool {
-    return !raylib.WindowShouldClose()
+    return !rl.WindowShouldClose()
 }
 
-render :: proc() {
-    raylib.BeginDrawing()
-    defer raylib.EndDrawing()
+start_render :: proc() {
+    rl.BeginDrawing()
+	cam := rl.Camera2D { zoom = 32 }
+	rl.BeginMode2D(cam)
+    rl.ClearBackground(rl.RAYWHITE)
+}
 
-    raylib.ClearBackground(raylib.RAYWHITE)
+end_render :: proc() {
+	rl.EndMode2D()
+	rl.EndDrawing()
 }
 
 draw_player :: proc(position: Vec2) {
-	raylib.DrawRectanglePro({position.x, -position.y, 20, 60}, {0, 0}, 0, raylib.DARKBLUE)
+	rl.DrawRectangleRec({position.x, -position.y, 1, 2}, rl.DARKBLUE)
 }
