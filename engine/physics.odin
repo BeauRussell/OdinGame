@@ -10,7 +10,8 @@ player_id: b2.BodyId
 
 init_world :: proc() -> b2.WorldId {
 	world_def := b2.DefaultWorldDef()
-	world_def.gravity = b2.Vec2{0, -10}
+	world_def.enableSleep = false
+	world_def.gravity = b2.Vec2{0, -20}
 	world_id = b2.CreateWorld(world_def)
 
 	return world_id
@@ -51,6 +52,5 @@ create_player :: proc() -> b2.BodyId {
 
 step_world :: proc(time_step: f32, sub_step: i32) -> Vec2 {
 	b2.World_Step(world_id, time_step, sub_step)
-	log.info(b2.Body_GetPosition(player_id))
 	return b2.Body_GetPosition(player_id)
 }
