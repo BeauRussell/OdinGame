@@ -8,10 +8,12 @@ import rl "vendor:raylib"
 world_id: b2.WorldId
 player_id: b2.BodyId
 
+WORLD_GRAVITY :: b2.Vec2{0, -20}
+
 init_world :: proc() -> b2.WorldId {
 	world_def := b2.DefaultWorldDef()
 	world_def.enableSleep = false
-	world_def.gravity = b2.Vec2{0, -20}
+	world_def.gravity = WORLD_GRAVITY
 	world_id = b2.CreateWorld(world_def)
 
 	return world_id
