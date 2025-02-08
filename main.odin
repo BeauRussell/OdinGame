@@ -34,8 +34,9 @@ main :: proc() {
 		60, 2 
 	}
 
-	ground_id := engine.create_ground_body(ground)
-	player_id := engine.create_player()
+	engine.create_ground_body(ground)
+	engine.create_player()
+	last_pos: engine.Vec2
 
     for render.running() {
 		render.start_render()
@@ -46,6 +47,8 @@ main :: proc() {
 		render.draw_player(player_pos)
 
 		render.end_render()
+
+		engine.check_move_input()
 		defer check_fps()
     }
 }
