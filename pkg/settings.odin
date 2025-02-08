@@ -4,6 +4,8 @@ import "core:encoding/json"
 import "core:os"
 import "core:fmt"
 
+import tracy "../odin-tracy"
+
 GameSettings :: struct {
 	window : struct {
     	width:  int,
@@ -15,6 +17,7 @@ GameSettings :: struct {
 settings : GameSettings
 
 init_settings :: proc() {
+	tracy.Zone()
     settings_data, ok := os.read_entire_file_from_filename("game_settings.json")
     if !ok {
         panic("Failed to load game_settings.json")

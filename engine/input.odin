@@ -2,7 +2,10 @@ package engine
 
 import rl "vendor:raylib"
 
+import tracy "../odin-tracy"
+
 check_move_input :: proc() {
+	tracy.Zone()
 	if rl.IsKeyDown(.RIGHT) || rl.IsKeyDown(.D) {
 		move_player(.Right)
 	}

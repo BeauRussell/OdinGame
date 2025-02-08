@@ -8,11 +8,14 @@ import rl "vendor:raylib"
 import "engine"
 import "pkg"
 import "render"
+import tracy "odin-tracy"
 
 TARGET_FPS : i32 : 60
 SUB_STEPS: i32 : 4
 
 main :: proc() {
+	tracy.SetThreadName("main")
+	tracy.Zone()
 	context.logger = create_logger()
 	defer log.destroy_console_logger(context.logger)
 
@@ -39,6 +42,8 @@ main :: proc() {
 	last_pos: engine.Vec2
 
     for render.running() {
+		defer tracy.FrameMark()
+		tracy.ZoneN("Main Game Loop")
 		render.start_render()
 
 		rl.DrawRectangleRec(cast(rl.Rectangle)ground, rl.YELLOW)
@@ -46,7 +51,8 @@ main :: proc() {
 
 		render.draw_player(player_pos)
 
-		render.end_render()
+		rl.EndMode2D()
+		rl.EndDrawing()
 
 		engine.check_move_input()
 		defer check_fps()
@@ -54,6 +60,7 @@ main :: proc() {
 }
 
 log_leaks :: proc(track: ^mem.Tracking_Allocator) {
+	tracy.Zone()
 	if len(track^.allocation_map) > 0 {
 		for _, entry in track^.allocation_map {
 			log.infof("%v leaked %v bytes\n", entry.location, entry.size)
@@ -69,10 +76,12 @@ log_leaks :: proc(track: ^mem.Tracking_Allocator) {
 }
 
 create_logger :: proc() -> log.Logger {
+	tracy.Zone()
 	return log.create_console_logger()
 }
 
 check_fps :: proc() {
+	tracy.Zone()
 	if check_fps := rl.GetFPS(); check_fps < TARGET_FPS {
 		log.errorf("Failed to reach target FPS: %i -> %i", TARGET_FPS, check_fps)
 	}
