@@ -12,6 +12,7 @@ player_id: b2.BodyId
 
 WORLD_GRAVITY :: b2.Vec2{0, -20}
 MAX_VELOCITY_SIDE :: b2.Vec2{40, 0}
+JUMP_FORCE :: b2.Vec2{0, 25}
 
 init_world :: proc() -> b2.WorldId {
 	tracy.Zone()
@@ -65,14 +66,19 @@ step_world :: proc(time_step: f32, sub_step: i32) -> Vec2 {
 	return b2.Body_GetPosition(player_id)
 }
 
-move_player :: proc(direction: Move_Direction) {
+move_player :: proc(direction: Move_Options) {
 	tracy.Zone()
-	max: Vec2
-	if direction == .Left {
-		max = MAX_VELOCITY_SIDE * -1
-	} else if direction == .Right {
-		max = MAX_VELOCITY_SIDE
+	switch direction {
+	case .Right: 
+		move_consistent_speed(MAX_VELOCITY_SIDE, player_id)
+	case .Left:
+		move_consistent_speed(MAX_VELOCITY_SIDE * -1, player_id)
+	case .Jump:
+		b2.Body_ApplyLinearImpulseToCenter(player_id, JUMP_FORCE, true)
 	}
+}
+
+move_consistent_speed :: proc(max: Vec2, player_id: b2.BodyId) {
 	force := calculate_force_for_constant_speed(max, player_id)
 	b2.Body_ApplyForceToCenter(player_id, force, true)
 }

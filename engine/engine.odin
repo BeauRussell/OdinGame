@@ -9,9 +9,8 @@ Box :: struct {
 	height: f32,
 }
 
-Move_Direction :: enum {
+Move_Options :: enum {
 	Right,
 	Left,
-	Up,
-	Down,
+	Jump,
 }
