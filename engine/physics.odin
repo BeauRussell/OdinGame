@@ -31,13 +31,14 @@ destroy_world :: proc(id: b2.WorldId = world_id) {
 create_ground_body :: proc(ground: Box) {
 	tracy.Zone()
 	ground_body_def := b2.DefaultBodyDef()
-	ground_body_def.position = b2.Vec2{ground.x, -ground.y-ground.height}
+	ground_body_def.position = b2.Vec2{ground.x, -ground.y}
 	ground_body_id := b2.CreateBody(world_id, ground_body_def)
 
 	ground_box := b2.MakeBox(ground.width, ground.height)
 	ground_shape_def := b2.DefaultShapeDef()
 	ground_shape_def.friction = 1 
-	_ = b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
+	box_id := b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
+	_ = b2.Shape_GetAABB(box_id)
 }
 
 create_player :: proc() {
@@ -49,11 +50,14 @@ create_player :: proc() {
 	body_def.linearDamping = 1
 	player_id = b2.CreateBody(world_id, body_def)
 
-	box := b2.MakeBox(1,2)
-	box_def := b2.DefaultShapeDef()
-	box_def.density = 1
-	box_def.friction = 1
-	_ = b2.CreatePolygonShape(player_id, box_def, box)
+	capsule := b2.Capsule {
+		center1 = {0.5, 0.5},
+		center2 = {0.5, 1.5},
+		radius = 0.5,
+	}
+	capsule_def := b2.DefaultShapeDef()
+	capsule_def.friction = 1
+	_ = b2.CreateCapsuleShape(player_id, capsule_def, capsule)
 }
 
 step_world :: proc(time_step: f32, sub_step: i32) -> Vec2 {
