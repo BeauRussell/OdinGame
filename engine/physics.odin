@@ -37,8 +37,7 @@ create_ground_body :: proc(ground: Box) {
 	ground_box := b2.MakeBox(ground.width, ground.height)
 	ground_shape_def := b2.DefaultShapeDef()
 	ground_shape_def.friction = 1 
-	box_id := b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
-	_ = b2.Shape_GetAABB(box_id)
+	_ = b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
 }
 
 create_player :: proc() {
