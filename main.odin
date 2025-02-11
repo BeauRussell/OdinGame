@@ -3,6 +3,7 @@ package main
 import "core:log"
 import "core:mem"
 
+import b2 "vendor:box2d"
 import rl "vendor:raylib"
 
 import "engine"
@@ -50,6 +51,10 @@ main :: proc() {
 		player_pos := engine.step_world(1.0 / f32(TARGET_FPS), SUB_STEPS)
 
 		render.draw_player(player_pos)
+
+		when ODIN_DEBUG {
+			b2.World_Draw(world_id, &render.DEBUG_DRAW)
+		}
 
 		rl.EndMode2D()
 		rl.EndDrawing()
