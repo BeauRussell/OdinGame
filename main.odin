@@ -1,7 +1,10 @@
 package main
 
+import "base:runtime"
 import "core:log"
 import "core:mem"
+import "core:prof/spall"
+import "core:sync"
 
 import b2 "vendor:box2d"
 import rl "vendor:raylib"
@@ -9,18 +12,27 @@ import rl "vendor:raylib"
 import "engine"
 import "pkg"
 import "render"
-import tracy "odin-tracy"
 
 TARGET_FPS : i32 : 60
 SUB_STEPS: i32 : 4
 
+spall_ctx: spall.Context
+@(thread_local) spall_buffer: spall.Buffer
+
 main :: proc() {
-	tracy.SetThreadName("main")
-	tracy.Zone()
 	context.logger = create_logger()
 	defer log.destroy_console_logger(context.logger)
 
 	when ODIN_DEBUG {
+		spall_ctx = spall.context_create("profile.spall")
+		defer spall.context_destroy(&spall_ctx)
+		buffer_backing := make([]u8, spall.BUFFER_DEFAULT_SIZE)
+		defer delete(buffer_backing)
+		spall_buffer = spall.buffer_create(buffer_backing, u32(sync.current_thread_id()))
+		defer spall.buffer_destroy(&spall_ctx, &spall_buffer)
+
+		spall.SCOPED_EVENT(&spall_ctx, &spall_buffer, "main")
+
 		track: mem.Tracking_Allocator
 		mem.tracking_allocator_init(&track, context.allocator)
 		context.allocator = mem.tracking_allocator(&track)
@@ -43,8 +55,10 @@ main :: proc() {
 	last_pos: engine.Vec2
 
     for render.running() {
-		defer tracy.FrameMark()
-		tracy.ZoneN("Main Game Loop")
+		when ODIN_DEBUG {
+			spall._buffer_begin(&spall_ctx, &spall_buffer, "frame", "")
+			defer spall._buffer_end(&spall_ctx, &spall_buffer)
+		}
 		render.start_render()
 
 		rl.DrawRectangleRec(cast(rl.Rectangle)ground, rl.YELLOW)
@@ -65,7 +79,6 @@ main :: proc() {
 }
 
 log_leaks :: proc(track: ^mem.Tracking_Allocator) {
-	tracy.Zone()
 	if len(track^.allocation_map) > 0 {
 		for _, entry in track^.allocation_map {
 			log.infof("%v leaked %v bytes\n", entry.location, entry.size)
@@ -81,13 +94,21 @@ log_leaks :: proc(track: ^mem.Tracking_Allocator) {
 }
 
 create_logger :: proc() -> log.Logger {
-	tracy.Zone()
 	return log.create_console_logger()
 }
 
 check_fps :: proc() {
-	tracy.Zone()
 	if check_fps := rl.GetFPS(); check_fps < TARGET_FPS {
 		log.errorf("Failed to reach target FPS: %i -> %i", TARGET_FPS, check_fps)
 	}
+}
+
+@(instrumentation_enter)
+spall_enter :: proc "contextless" (proc_address, call_site_return_address: rawptr, loc: runtime.Source_Code_Location) {
+	spall._buffer_begin(&spall_ctx, &spall_buffer, "", "", loc)
+}
+
+@(instrumentation_exit)
+spall_exit :: proc "contextless" (proc_address, call_site_return_address: rawptr, loc: runtime.Source_Code_Location) {
+	spall._buffer_end(&spall_ctx, &spall_buffer)
 }

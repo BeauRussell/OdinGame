@@ -2,3 +2,6 @@ OdinGame
 *.bin
 /assets/
 /stages/
+*.exe
+*.pdb
+*.spall
