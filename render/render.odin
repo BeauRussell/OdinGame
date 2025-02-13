@@ -32,9 +32,9 @@ start_render :: proc() {
     rl.BeginDrawing()
 	cam := rl.Camera2D { zoom = 32 }
 	rl.BeginMode2D(cam)
-    rl.ClearBackground(rl.RAYWHITE)
+	rl.ClearBackground(rl.WHITE)
 }
 
 draw_player :: proc(position: Vec2) {
-	rl.DrawRectangleRec({position.x, -position.y, 1, 2}, rl.DARKBLUE)
+	rl.DrawCapsule({position.x - 0.5, -position.y + 1.5, 0}, {position.x - 0.5, -position.y + 0.5, 0}, 0.5, 10, 10, rl.DARKBLUE)
 }
