@@ -14,3 +14,12 @@ Move_Options :: enum {
 	Left,
 	Jump,
 }
+
+Player_State :: enum {
+	Idle,
+	Jumping,
+}
+
+User_Data :: struct {
+	state: Player_State,
+}

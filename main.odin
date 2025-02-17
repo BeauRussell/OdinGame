@@ -76,6 +76,7 @@ main :: proc() {
 		rl.EndMode2D()
 		rl.EndDrawing()
 
+		engine.check_contacts()
 		engine.check_move_input()
 		defer check_fps()
     }

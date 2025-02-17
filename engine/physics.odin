@@ -6,9 +6,10 @@ import b2 "vendor:box2d"
 
 world_id: b2.WorldId
 player_id: b2.BodyId
+player_data: User_Data
 
 WORLD_GRAVITY :: b2.Vec2{0, -20}
-MAX_VELOCITY_SIDE :: b2.Vec2{40, 0}
+MAX_VELOCITY_SIDE :: b2.Vec2{20, 0}
 JUMP_FORCE :: b2.Vec2{0, 25}
 
 init_world :: proc() -> b2.WorldId {
@@ -40,7 +41,8 @@ create_player :: proc() {
 	body_def.type = .dynamicBody
 	body_def.position = b2.Vec2{1, -28}
 	body_def.fixedRotation = true
-	body_def.linearDamping = 1
+	body_def.linearDamping = 0 
+	body_def.userData = &player_data
 	player_id = b2.CreateBody(world_id, body_def)
 
 	capsule := b2.Capsule {
@@ -49,16 +51,20 @@ create_player :: proc() {
 		radius = 0.5,
 	}
 	capsule_def := b2.DefaultShapeDef()
-	capsule_def.friction = 1
+	capsule_def.friction = 0.5 
 	_ = b2.CreateCapsuleShape(player_id, capsule_def, capsule)
 }
 
 step_world :: proc(time_step: f32, sub_step: i32) -> Vec2 {
 	b2.World_Step(world_id, time_step, sub_step)
+	user_data := b2.Body_GetUserData(player_id)
 	return b2.Body_GetPosition(player_id)
 }
 
 move_player :: proc(direction: Move_Options) {
+	if player_data.state == .Jumping {
+		return
+	}
 	switch direction {
 	case .Right: 
 		move_consistent_speed(MAX_VELOCITY_SIDE, player_id)
@@ -84,4 +90,20 @@ calculate_force_for_constant_speed :: proc(maxVelocity: Vec2, bodyId: b2.BodyId)
 	force = force * mass
 
 	return force 
+}
+
+check_contacts :: proc() {
+	contact_events := b2.World_GetContactEvents(world_id)
+	for i: i32 = 0; i < contact_events.beginCount; i += 1 {
+		event := contact_events.beginEvents[i]
+		if b2.Shape_GetBody(event.shapeIdB) == player_id {
+			player_data.state = .Idle
+		}
+	}
+	for i: i32 = 0; i < contact_events.endCount; i += 1 {
+		event := contact_events.endEvents[i]
+		if b2.Shape_GetBody(event.shapeIdB) == player_id {
+			player_data.state = .Jumping
+		}
+	}
 }
