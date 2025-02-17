@@ -36,5 +36,5 @@ start_render :: proc() {
 }
 
 draw_player :: proc(position: Vec2) {
-	rl.DrawCapsule({position.x - 0.5, -position.y + 1.5, 0}, {position.x - 0.5, -position.y + 0.5, 0}, 0.5, 10, 10, rl.DARKBLUE)
+	rl.DrawCapsule({position.x + 0.5, -position.y - 1.5, 0}, {position.x + 0.5, -position.y - 0.5, 0}, 0.5, 10, 10, rl.DARKBLUE)
 }

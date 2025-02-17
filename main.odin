@@ -46,7 +46,7 @@ main :: proc() {
 	defer engine.destroy_world(world_id)
 
 	ground := engine.Box{
-		0, 32,
+		0, 34,
 		60, 2 
 	}
 
@@ -61,7 +61,10 @@ main :: proc() {
 		}
 		render.start_render()
 
-		rl.DrawRectangleRec(cast(rl.Rectangle)ground, rl.YELLOW)
+		// TODO: Figure out what to do here instead of this
+		ground_render := rl.Rectangle{ ground.x, ground.y - ground.height, ground.width, ground.height}
+
+		rl.DrawRectangleRec(ground_render, rl.YELLOW)
 		player_pos := engine.step_world(1.0 / f32(TARGET_FPS), SUB_STEPS)
 
 		render.draw_player(player_pos)

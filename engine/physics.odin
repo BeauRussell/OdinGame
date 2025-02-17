@@ -3,7 +3,6 @@ package engine
 import "core:log"
 
 import b2 "vendor:box2d"
-import rl "vendor:raylib"
 
 world_id: b2.WorldId
 player_id: b2.BodyId
