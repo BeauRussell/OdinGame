@@ -65,7 +65,7 @@ main :: proc() {
 		render.start_render()
 
 		// TODO: Figure out what to do here instead of this
-		ground_render := rl.Rectangle{ ground.x, ground.y - ground.height, ground.width, ground.height}
+		ground_render := rl.Rectangle{ ground.x, ground.y - ground.height, ground.width, ground.height }
 
 		rl.DrawRectangleRec(ground_render, rl.YELLOW)
 		player_pos := engine.step_world(1.0 / f32(TARGET_FPS), SUB_STEPS)
