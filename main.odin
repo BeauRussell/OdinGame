@@ -33,6 +33,8 @@ main :: proc() {
 
 		spall.SCOPED_EVENT(&spall_ctx, &spall_buffer, "main")
 
+		b2.SetAssertFcn(box2_assert_handler)
+
 		track: mem.Tracking_Allocator
 		mem.tracking_allocator_init(&track, context.allocator)
 		context.allocator = mem.tracking_allocator(&track)
@@ -54,7 +56,8 @@ main :: proc() {
 	engine.create_player()
 	last_pos: engine.Vec2
 
-    for render.running() {
+	run := true
+    for run {
 		when ODIN_DEBUG {
 			spall._buffer_begin(&spall_ctx, &spall_buffer, "frame", "")
 			defer spall._buffer_end(&spall_ctx, &spall_buffer)
@@ -75,6 +78,8 @@ main :: proc() {
 
 		rl.EndMode2D()
 		rl.EndDrawing()
+
+		run = render.running()
 
 		engine.check_contacts()
 		engine.check_move_input()
@@ -115,4 +120,10 @@ spall_enter :: proc "contextless" (proc_address, call_site_return_address: rawpt
 @(instrumentation_exit)
 spall_exit :: proc "contextless" (proc_address, call_site_return_address: rawptr, loc: runtime.Source_Code_Location) {
 	spall._buffer_end(&spall_ctx, &spall_buffer)
+}
+
+box2_assert_handler :: proc "c" (condition, file_name: cstring, line_number: i32) -> i32 {
+	context = runtime.default_context()
+	log.errorf("Box2d hit an assertion: condition %s at %s:%d", condition, file_name, line_number)
+	return 1
 }
