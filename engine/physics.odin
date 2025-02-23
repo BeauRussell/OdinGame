@@ -32,7 +32,7 @@ create_ground_body :: proc(ground: Box) {
 
 	ground_box := b2.MakeBox(ground.width, ground.height)
 	ground_shape_def := b2.DefaultShapeDef()
-	ground_shape_def.friction = 1 
+	ground_shape_def.friction = 0.4 
 	_ = b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
 }
 
@@ -51,7 +51,7 @@ create_player :: proc() {
 		radius = 0.5,
 	}
 	capsule_def := b2.DefaultShapeDef()
-	capsule_def.friction = 0.5 
+	capsule_def.friction = 0.2 
 	_ = b2.CreateCapsuleShape(player_id, capsule_def, capsule)
 }
 
@@ -93,17 +93,24 @@ calculate_force_for_constant_speed :: proc(maxVelocity: Vec2, bodyId: b2.BodyId)
 }
 
 check_contacts :: proc() {
-	contact_events := b2.World_GetContactEvents(world_id)
-	for i: i32 = 0; i < contact_events.beginCount; i += 1 {
-		event := contact_events.beginEvents[i]
-		if b2.Shape_GetBody(event.shapeIdB) == player_id {
-			player_data.state = .Idle
-		}
+	player_contacts := b2.Body_GetContactCapacity(player_id)
+	if player_contacts == 0 {
+		player_data.state = .Jumping
+	} else {
+		player_data.state = .Idle
 	}
-	for i: i32 = 0; i < contact_events.endCount; i += 1 {
-		event := contact_events.endEvents[i]
-		if b2.Shape_GetBody(event.shapeIdB) == player_id {
-			player_data.state = .Jumping
-		}
-	}
+}
+
+create_moveable_box :: proc(pos: Vec2) -> b2.BodyId {
+	box_body_def := b2.DefaultBodyDef()
+	box_body_def.position = pos 
+	box_body_def.type = .dynamicBody
+	box_body_id := b2.CreateBody(world_id, box_body_def)
+
+	box_shape := b2.MakeSquare(1)
+	box_shape_def := b2.DefaultShapeDef()
+	box_shape_def.friction = 0.3 
+	_ = b2.CreatePolygonShape(box_body_id, box_shape_def, box_shape)
+
+	return box_body_id
 }

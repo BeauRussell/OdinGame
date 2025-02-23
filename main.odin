@@ -55,6 +55,7 @@ main :: proc() {
 	engine.create_ground_body(ground)
 	engine.create_player()
 	last_pos: engine.Vec2
+	box_id := engine.create_moveable_box({10, -20})
 
 	run := true
     for run {
@@ -69,6 +70,10 @@ main :: proc() {
 
 		rl.DrawRectangleRec(ground_render, rl.YELLOW)
 		player_pos := engine.step_world(1.0 / f32(TARGET_FPS), SUB_STEPS)
+
+		body_pos := b2.Body_GetPosition(box_id)
+
+		rl.DrawRectangleV({body_pos.x - 1, -body_pos.y - 1}, {2, 2}, rl.GREEN)
 
 		render.draw_player(player_pos)
 
