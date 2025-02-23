@@ -109,7 +109,7 @@ create_moveable_box :: proc(pos: Vec2) -> b2.BodyId {
 
 	box_shape := b2.MakeSquare(1)
 	box_shape_def := b2.DefaultShapeDef()
-	box_shape_def.friction = 0.3 
+	box_shape_def.friction = 0.2 
 	_ = b2.CreatePolygonShape(box_body_id, box_shape_def, box_shape)
 
 	return box_body_id
