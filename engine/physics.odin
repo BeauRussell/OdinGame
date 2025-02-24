@@ -32,7 +32,7 @@ create_ground_body :: proc(ground: Box) {
 
 	ground_box := b2.MakeBox(ground.width, ground.height)
 	ground_shape_def := b2.DefaultShapeDef()
-	ground_shape_def.friction = 0.4 
+	ground_shape_def.friction = 0.6 
 	_ = b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
 }
 
@@ -41,7 +41,7 @@ create_player :: proc(pos: Vec2) {
 	body_def.type = .dynamicBody
 	body_def.position = pos 
 	body_def.fixedRotation = true
-	body_def.linearDamping = 0 
+	body_def.linearDamping = 0.8
 	body_def.userData = &player_data
 	player_id = b2.CreateBody(world_id, body_def)
 
@@ -51,7 +51,7 @@ create_player :: proc(pos: Vec2) {
 		radius = 0.5,
 	}
 	capsule_def := b2.DefaultShapeDef()
-	capsule_def.friction = 0.2 
+	capsule_def.friction = 0.3
 	_ = b2.CreateCapsuleShape(player_id, capsule_def, capsule)
 }
 
@@ -109,7 +109,7 @@ create_moveable_box :: proc(pos: Vec2) -> b2.BodyId {
 
 	box_shape := b2.MakeSquare(1)
 	box_shape_def := b2.DefaultShapeDef()
-	box_shape_def.friction = 0.2 
+	box_shape_def.friction = 0.05
 	_ = b2.CreatePolygonShape(box_body_id, box_shape_def, box_shape)
 
 	return box_body_id
