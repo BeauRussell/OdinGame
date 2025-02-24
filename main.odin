@@ -53,9 +53,9 @@ main :: proc() {
 	}
 
 	engine.create_ground_body(ground)
-	engine.create_player()
+	engine.create_player({1, -32})
 	last_pos: engine.Vec2
-	box_id := engine.create_moveable_box({10, -20})
+	box_id := engine.create_moveable_box({10, -31})
 
 	run := true
     for run {
@@ -130,5 +130,5 @@ spall_exit :: proc "contextless" (proc_address, call_site_return_address: rawptr
 box2_assert_handler :: proc "c" (condition, file_name: cstring, line_number: i32) -> i32 {
 	context = runtime.default_context()
 	log.errorf("Box2d hit an assertion: condition %s at %s:%d", condition, file_name, line_number)
-	return 1
+	return 0 
 }

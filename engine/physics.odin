@@ -36,10 +36,10 @@ create_ground_body :: proc(ground: Box) {
 	_ = b2.CreatePolygonShape(ground_body_id, ground_shape_def, ground_box)
 }
 
-create_player :: proc() {
+create_player :: proc(pos: Vec2) {
 	body_def := b2.DefaultBodyDef()
 	body_def.type = .dynamicBody
-	body_def.position = b2.Vec2{1, -28}
+	body_def.position = pos 
 	body_def.fixedRotation = true
 	body_def.linearDamping = 0 
 	body_def.userData = &player_data
